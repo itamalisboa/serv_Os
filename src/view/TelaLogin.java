@@ -13,7 +13,15 @@ import java.awt.Font;
 import java.awt.Color;
 import javax.swing.JPasswordField;
 
+import java.sql.*;
+import controller.ConexaoDao;
+import javax.swing.ImageIcon;
+
 public class TelaLogin extends JFrame {
+	
+	Connection conexao = null;
+	PreparedStatement pst = null;
+	ResultSet rs = null;
 
 	private JPanel contentPane;
 	private JTextField txtLogin;
@@ -39,6 +47,7 @@ public class TelaLogin extends JFrame {
 	 * Create the frame.
 	 */
 	public TelaLogin() {
+			
 		setTitle(":::.Login.:::");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -81,5 +90,23 @@ public class TelaLogin extends JFrame {
 		passwordField.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		passwordField.setBounds(115, 105, 220, 35);
 		panel.add(passwordField);
+		
+		JLabel lblStatusbd = new JLabel("");
+		lblStatusbd.setIcon(new ImageIcon(TelaLogin.class.getResource("/br/com/servos/imgs/DB_OK.png")));
+		lblStatusbd.setBounds(10, 165, 60, 72);
+		panel.add(lblStatusbd);
+		
+		
+		conexao = ConexaoDao.conector();
+		
+		//Exibindo o status da conexão
+		//System.out.println(conexao);
+		
+		if(conexao != null) {
+			lblStatusbd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/servos/imgs/DB_OK.png")));
+		}else {
+			lblStatusbd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/servos/imgs/DB_ERROR.png")));
+		}
+		
 	}
 }
