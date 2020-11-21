@@ -6,6 +6,9 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import controller.usuarioDao;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -49,6 +52,7 @@ public class TelaPrincipal extends JFrame {
 	 * Create the frame.
 	 */
 	public TelaPrincipal() {
+		
 
 		JLabel lblData = new JLabel("data");
 		lblData.setHorizontalAlignment(SwingConstants.CENTER);
@@ -67,7 +71,7 @@ public class TelaPrincipal extends JFrame {
 		setResizable(false);
 		setTitle("::::..SERV OS..::::");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 744, 483);
+		setBounds(100, 100, 800, 483);
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -203,7 +207,7 @@ public class TelaPrincipal extends JFrame {
 		
 		JPanel panel_Lateral = new JPanel();
 		panel_Lateral.setBackground(SystemColor.activeCaption);
-		panel_Lateral.setBounds(550, 0, 178, 423);
+		panel_Lateral.setBounds(591, 0, 193, 423);
 		panel.add(panel_Lateral);
 		panel_Lateral.setLayout(null);
 		
@@ -218,7 +222,8 @@ public class TelaPrincipal extends JFrame {
 		panel_Lateral.add(lblDataIcon);
 		
 		JLabel lblUsuario = new JLabel("usuario");
-		lblUsuario.setBounds(70, 69, 83, 14);
+		lblUsuario.setFont(new Font("Tahoma", Font.BOLD, 12));
+		lblUsuario.setBounds(70, 69, 110, 14);
 		panel_Lateral.add(lblUsuario);
 		
 		lblData.setBounds(70, 140, 80, 20);
@@ -241,10 +246,31 @@ public class TelaPrincipal extends JFrame {
 		
 		JLabel lblLogoCentral = new JLabel("");
 		lblLogoCentral.setIcon(new ImageIcon(TelaPrincipal.class.getResource("/br/com/servos/imgs/servos_01.PNG")));
-		lblLogoCentral.setBounds(59, 141, 437, 271);
+		lblLogoCentral.setBounds(77, 141, 437, 271);
 		panel.add(lblLogoCentral);
 		
 		this.setLocationRelativeTo(null);
+		
+		int nivel = usuarioDao.nivel_Acesso;
+		String nome = usuarioDao.nomeUsuario;
+		
+		//System.out.println(nome);
+		
+		//System.out.println("O nível é: " + nivel);
+		
+		if(nivel == 1) {
+			//System.out.println("Usuário ADMIN");
+			menCadEmpresa.setEnabled(true);
+			menCadFuncionario.setEnabled(true);
+			menCadServios.setEnabled(true);
+			menCadUsuario.setEnabled(true);
+			lblUsuario.setText("Olá " + nome);
+			lblUsuario.setForeground(Color.red);
+		}else {
+			//System.out.println("Usuário Comun");
+			lblUsuario.setText("Olá " + nome);
+		}
+		
 		
 	}
 }

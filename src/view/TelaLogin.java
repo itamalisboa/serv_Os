@@ -16,6 +16,8 @@ import javax.swing.JPasswordField;
 
 import java.sql.*;
 import controller.ConexaoDao;
+import controller.usuarioDao;
+
 import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -42,6 +44,15 @@ public class TelaLogin extends JFrame {
 			rs = pst.executeQuery();
 			//Se existir usuario e senha compatíveis:
 			if(rs.next()) {
+				
+				String nivel = rs.getString(4);
+				String nomeUsu = rs.getString(2);
+				//System.out.println(nivel);
+				//System.out.println(nomeUsu);
+				
+				usuarioDao.nivel_Acesso = Integer.parseInt(nivel);
+				usuarioDao.nomeUsuario = nomeUsu;
+				
 				TelaPrincipal principal = new TelaPrincipal();
 				principal.setVisible(true); //Exibindo a tela principal!
 				this.dispose(); //Fechando a tela de login!
