@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.Font;
@@ -16,16 +17,49 @@ import javax.swing.JPasswordField;
 import java.sql.*;
 import controller.ConexaoDao;
 import javax.swing.ImageIcon;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class TelaLogin extends JFrame {
 	
 	Connection conexao = null;
 	PreparedStatement pst = null;
 	ResultSet rs = null;
+	
+	public void logar() {
+		String sql = "select * from usuario where \"Login_Usu\" = ? and \"Senha_Usu\" = ?;";
+		//String sql = "select * from usuarios where login_usu = ? and senha_usu = ?;";
+		
+		
+		//Pegando os dados  dos campos para efetuar consulta no BD;
+		try {
+			pst = conexao.prepareStatement(sql);
+			pst.setString(1, txtLogin.getText());
+			pst.setString(2, txtSenha.getText());
+			
+			//Executando a query/consulta
+			
+			rs = pst.executeQuery();
+			//Se existir usuario e senha compatíveis:
+			if(rs.next()) {
+				TelaPrincipal principal = new TelaPrincipal();
+				principal.setVisible(true); //Exibindo a tela principal!
+				this.dispose(); //Fechando a tela de login!
+				conexao.close(); //Fechando a conexão!
+			}else {
+				JOptionPane.showMessageDialog(null, "Usuário e/ou senha não encontrados!");
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			JOptionPane.showMessageDialog(null, e);
+		}
+		
+	}
 
 	private JPanel contentPane;
 	private JTextField txtLogin;
-	private JPasswordField passwordField;
+	private JPasswordField txtSenha;
 
 	/**
 	 * Launch the application.
@@ -81,15 +115,22 @@ public class TelaLogin extends JFrame {
 		txtLogin.setColumns(10);
 		
 		JButton btnLogar = new JButton("Logar");
+		btnLogar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//Chamando o método que efetuará o login no BD; 
+				
+				logar();
+			}
+		});
 		btnLogar.setBackground(new Color(192, 192, 192));
 		btnLogar.setFont(new Font("Tahoma", Font.BOLD, 13));
 		btnLogar.setBounds(235, 165, 100, 35);
 		panel.add(btnLogar);
 		
-		passwordField = new JPasswordField();
-		passwordField.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		passwordField.setBounds(115, 105, 220, 35);
-		panel.add(passwordField);
+		txtSenha = new JPasswordField();
+		txtSenha.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		txtSenha.setBounds(115, 105, 220, 35);
+		panel.add(txtSenha);
 		
 		JLabel lblStatusbd = new JLabel("");
 		lblStatusbd.setIcon(new ImageIcon(TelaLogin.class.getResource("/br/com/servos/imgs/DB_OK.png")));
@@ -107,6 +148,8 @@ public class TelaLogin extends JFrame {
 		}else {
 			lblStatusbd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/servos/imgs/DB_ERROR.png")));
 		}
+		
+		
 		
 	}
 }
