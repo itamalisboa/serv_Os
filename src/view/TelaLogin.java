@@ -81,7 +81,7 @@ public class TelaLogin extends JFrame {
 	 * Create the frame.
 	 */
 	public TelaLogin() {
-			
+		
 		setTitle(":::.Login.:::");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -149,7 +149,7 @@ public class TelaLogin extends JFrame {
 			lblStatusbd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/servos/imgs/DB_ERROR.png")));
 		}
 		
-		
+		this.setLocationRelativeTo(null);
 		
 	}
 }
