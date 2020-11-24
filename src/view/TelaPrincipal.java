@@ -125,6 +125,13 @@ public class TelaPrincipal extends JFrame {
 		menuBar.add(menuOrdemDeServico);
 		
 		JMenuItem menuGerarOs = new JMenuItem("Gerar OS");
+		menuGerarOs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//Chamando a tela OS;
+				TelaOS os = new TelaOS();
+				os.setVisible(true);
+			}
+		});
 		menuOrdemDeServico.add(menuGerarOs);
 		
 		JMenuItem menuConsultarOs = new JMenuItem("Consultar OS");

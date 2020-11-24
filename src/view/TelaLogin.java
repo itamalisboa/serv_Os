@@ -29,8 +29,8 @@ public class TelaLogin extends JFrame {
 	ResultSet rs = null;
 	
 	public void logar() {
-		String sql = "select * from usuario where \"Login_Usu\" = ? and \"Senha_Usu\" = ?;";
-		//String sql = "select * from usuarios where login_usu = ? and senha_usu = ?;";
+		//String sql = "select * from usuario where \"Login_Usu\" = ? and \"Senha_Usu\" = ?;";
+		String sql = "select * from usuarios where login_usu = ? and senha_usu = ?;";
 		
 		
 		//Pegando os dados  dos campos para efetuar consulta no BD;

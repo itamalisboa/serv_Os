@@ -29,7 +29,7 @@ public class ConexaoDao {
 		
 		//Informações referente ao BD.
 		
-		String url = "jdbc:postgresql://localhost:5432/bd_dedetizadora2";
+		String url = "jdbc:postgresql://localhost:5432/bd_dedetizadora";
 		String user = "postgres";
 		String password = "I24S02L";
 		
