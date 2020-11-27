@@ -17,6 +17,8 @@ import java.sql.*;
 
 public class ConexaoDao {
 	
+	Connection conexao = null;
+	
 	//Método responsável por efetuar a conexão com o BD;
 	
 	public static Connection conector() {
@@ -47,5 +49,19 @@ public class ConexaoDao {
 		}
 		
 	}
+	
+	//REALIZANDO UMA BUSCA NO BANCO
+
+		public ResultSet executaBusca(String sql) {
+			try {
+				Statement stm = conexao.createStatement();
+				ResultSet rs = stm.executeQuery(sql);
+				//con.close();
+				return rs;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
 
 }

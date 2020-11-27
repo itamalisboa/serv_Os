@@ -30,8 +30,18 @@ import java.awt.Font;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+
 import controller.ConexaoDao;
+import controller.os_Dao;
+import model.model_OS;
 import net.proteanit.sql.DbUtils;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener;
@@ -45,6 +55,10 @@ public class TelaOS extends JFrame {
 	//Essa variável irá pegar a informação se é OS ou Orçamento
 	private String tipo;
 	
+	private float valorUnitServ = 0;
+	private float areaAplic = 0;
+	private float totalOS = 0;
+	
 	//Métodos
 	
 	//Método pesquisarClientes
@@ -52,9 +66,11 @@ public class TelaOS extends JFrame {
 	
 	public void pesquisarClientes() {
 		
+		
+		
 		//Chamando o método de conexão com o BD;
 		
-				conexao = ConexaoDao.conector();
+		conexao = ConexaoDao.conector();
 		
 		String sql = "select id_cliente as Id, nome_cliente as Nome, telefone_cliente as Telefone from clientes where nome_cliente like ?";
 		
@@ -79,9 +95,46 @@ public class TelaOS extends JFrame {
 		txtIdCliente.setText(jtbClienteOS.getModel().getValueAt(setar, 0).toString());
 	}
 	
+	
+	//Método para cadastro de uma OS
+	
+		private void emitir_OS() {
+			
+			
+			
+		}
+	
+	//Imprimindo uma OS
+	
+	private void imprimir_OS() {
+		
+		//Imprmindo Uma Ordens de Serviços Geradas
+		
+		int confirma = JOptionPane.showConfirmDialog(null, "Confirma a Impressão da Ordem de Seriviço?", "Atenção", JOptionPane.YES_NO_OPTION);
+		
+		if(confirma == JOptionPane.YES_OPTION) {
+			//Imprimindo o relatório com o JasperReport
+			try {
+				
+				//Usando a Classe HashMap Para Criar um Filtro
+				
+				HashMap filtro = new HashMap();
+				filtro.put("codOS", Integer.parseInt(txtNumOS.getText()));
+				
+				//Usando a classe JasperPrint para preparar a impressão do relatório
+				JasperPrint print = JasperFillManager.fillReport("Dependencias/Relatorios/ordemservico.jasper",filtro,conexao);
+				//A classe a baixo exibe o relatório através da classe JasperView
+				JasperViewer.viewReport(print, false);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, e);
+			}
+		}
+		
+	}
+	
 
 	private JPanel contentPane;
-	private JTextField tdtDataOS;
+	private JTextField txtDataOS;
 	private JTextField txtNumOS;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JTextField txtPesquisarCliente;
@@ -90,7 +143,6 @@ public class TelaOS extends JFrame {
 	private JTextField txtAreaAplic;
 	private JTextField txtDataExecOS;
 	private JTextField txtValUnitServ;
-	private JTextField txtValTotalOS;
 	private JTextField txtTecResp;
 
 	/**
@@ -113,6 +165,7 @@ public class TelaOS extends JFrame {
 	 * Create the frame.
 	 */
 	public TelaOS() {
+		setResizable(false);
 		
 			
 		setTitle(":::.Ordem de Servi\u00E7o.:::");
@@ -139,10 +192,10 @@ public class TelaOS extends JFrame {
 		lblDataOs.setBounds(132, 15, 46, 14);
 		panel.add(lblDataOs);
 		
-		tdtDataOS = new JTextField();
-		tdtDataOS.setBounds(132, 36, 86, 20);
-		panel.add(tdtDataOS);
-		tdtDataOS.setColumns(10);
+		txtDataOS = new JTextField();
+		txtDataOS.setBounds(132, 36, 86, 20);
+		panel.add(txtDataOS);
+		txtDataOS.setColumns(10);
 		
 		txtNumOS = new JTextField();
 		txtNumOS.setBounds(29, 36, 71, 20);
@@ -255,7 +308,7 @@ public class TelaOS extends JFrame {
 		contentPane.add(lblServios);
 		
 		JComboBox cboServico = new JComboBox();
-		cboServico.setModel(new DefaultComboBoxModel(new String[] {"Servi\u00E7o de Dedetiza\u00E7\u00E3o", "Servi\u00E7o de Desratiza\u00E7\u00E3o", "Servi\u00E7o de Descupiniza\u00E7\u00E3o"}));
+		cboServico.setModel(new DefaultComboBoxModel(new String[] {"Servi\u00E7o de Desratiza\u00E7\u00E3o", "Servi\u00E7o de Dedetiza\u00E7\u00E3o", "Servi\u00E7o de Descupiniza\u00E7\u00E3o"}));
 		cboServico.setBackground(Color.WHITE);
 		cboServico.setBounds(62, 196, 334, 20);
 		contentPane.add(cboServico);
@@ -293,12 +346,6 @@ public class TelaOS extends JFrame {
 		lblValorTotal.setBounds(461, 286, 90, 14);
 		contentPane.add(lblValorTotal);
 		
-		txtValTotalOS = new JTextField();
-		txtValTotalOS.setEditable(false);
-		txtValTotalOS.setBounds(555, 283, 119, 20);
-		contentPane.add(txtValTotalOS);
-		txtValTotalOS.setColumns(10);
-		
 		JLabel lblTcnico = new JLabel("T\u00E9cnico:");
 		lblTcnico.setBounds(406, 242, 53, 14);
 		contentPane.add(lblTcnico);
@@ -320,15 +367,84 @@ public class TelaOS extends JFrame {
 		lblCadastrarOS.setToolTipText("Cadastrar");
 		lblCadastrarOS.setBounds(182, 10, 48, 48);
 		panel_2.add(lblCadastrarOS);
+		
+		JLabel lblTotalOs = new JLabel("totalOS");
+		
 		lblCadastrarOS.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				JOptionPane.showMessageDialog(null, "Você clicou em salvar?");
+				
+				String sql = "INSERT INTO public.ordemservico(\r\n" + 
+						"	codo_serv, id_cliente, cod_serv, id_func, data_os, data_exec, status_serv, tipoos_orc)\r\n" + 
+						"	VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+				
+				areaAplic = Float.parseFloat(txtAreaAplic.getText());
+				
+				valorUnitServ = Float.parseFloat(txtValUnitServ.getText());
+					
+				totalOS = valorUnitServ * areaAplic;
+					
+				lblTotalOs.setText(Float.toString(totalOS));
+				
+				
+				try {
+					pst = conexao.prepareStatement(sql);
+					pst.setInt(1, Integer.parseInt(txtNumOS.getText()));
+					pst.setInt(2, Integer.parseInt(txtIdCliente.getText()));
+					pst.setInt(3, cboServico.getSelectedIndex());
+					pst.setInt(4, Integer.parseInt(txtTecResp.getText()));
+					pst.setString(5, txtDataOS.getText());
+					pst.setString(6, txtDataExecOS.getText());
+					pst.setString(7, cboSituacao.getSelectedItem().toString());
+					pst.setString(8, tipo);
+					
+					//Validação dos campos obrigatórios
+					
+					if ((txtIdCliente.getText().isEmpty()) || (txtNumOS.getText().isEmpty())) {
+						JOptionPane.showMessageDialog(null, "Preencha os campos obrigatórios!");
+					} else {
+						int adicionado = pst.executeUpdate();
+						if(adicionado > 0) {
+							JOptionPane.showMessageDialog(null, "Cadastro realizado com sucesso");
+							
+							txtPesquisarCliente.setText(null);
+							txtDataOS.setText(null);
+							txtDataExecOS.setText(null);
+							txtIdCliente.setText(null);
+							txtNumOS.setText(null);
+							txtTecResp.setText(null);
+							txtAreaAplic.setText(null);
+							
+						}
+					}
+					
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, e);
+				}
+				
 			}
 		});
 		lblCadastrarOS.setIcon(new ImageIcon(TelaOS.class.getResource("/br/com/servos/imgs/salvar_48x48.png")));
 		
 		JLabel lblConsultar = new JLabel("");
+		lblConsultar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				//Pesquisando uma OS
+				
+				model_OS os = new model_OS();
+				
+				os.setCodo_serv(Integer.parseInt(JOptionPane.showInputDialog("Informe o nº da OS!")));
+				
+				os_Dao dao = new os_Dao();
+				
+				dao.pesquisar_os(os);
+				txtNumOS.setText(Integer.toString(os.getCodo_serv()));
+				txtIdCliente.setText(Integer.toString(os.getId_cliente()));
+				txtDataOS.setText(os.getData_os());
+				
+			}
+		});
 		lblConsultar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		lblConsultar.setToolTipText("Pesquisar");
 		lblConsultar.setBounds(245, 10, 48, 48);
@@ -353,6 +469,16 @@ public class TelaOS extends JFrame {
 		lblDeletar.setHorizontalAlignment(SwingConstants.CENTER);
 		
 		JLabel lblImprimir = new JLabel("");
+		lblImprimir.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				
+				//Chamando o método para gerar uma OS
+				
+				imprimir_OS();
+				
+			}
+		});
 		lblImprimir.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		lblImprimir.setToolTipText("Imprimir");
 		lblImprimir.setBounds(434, 10, 48, 48);
@@ -360,10 +486,18 @@ public class TelaOS extends JFrame {
 		lblImprimir.setIcon(new ImageIcon(TelaOS.class.getResource("/br/com/servos/imgs/imprimir_48x48.png")));
 		lblImprimir.setHorizontalAlignment(SwingConstants.CENTER);
 		
+		
+		lblTotalOs.setBounds(561, 287, 46, 14);
+		contentPane.add(lblTotalOs);
+		
 		this.setLocationRelativeTo(null);
 		
 		
 		//---------------------------------------
+		
+		//lblTotalOs.setText("0.0");
+		
+		
 		
 		
 		

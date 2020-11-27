@@ -8,6 +8,9 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import controller.usuarioDao;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
 
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -27,8 +30,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DateFormat;
 import java.util.Date;
+import java.sql.*;
 
 public class TelaPrincipal extends JFrame {
+	
+	Connection conexao = null;
 
 	private JPanel contentPane;
 
@@ -52,6 +58,8 @@ public class TelaPrincipal extends JFrame {
 	 * Create the frame.
 	 */
 	public TelaPrincipal() {
+		
+		conexao = controller.ConexaoDao.conector();
 		
 
 		JLabel lblData = new JLabel("data");
@@ -97,24 +105,72 @@ public class TelaPrincipal extends JFrame {
 		menuBar.add(menuCadastros);
 		
 		JMenuItem menCadEmpresa = new JMenuItem("Empresa");
+		menCadEmpresa.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				Cadastro_Empresa empresa = new Cadastro_Empresa();
+				empresa.setVisible(true);
+				
+			}
+		});
 		menCadEmpresa.setEnabled(false);
 		menuCadastros.add(menCadEmpresa);
 		
 		JMenuItem menCadUsuario = new JMenuItem("Usu\u00E1rio");
+		menCadUsuario.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				Cadastro_Usuario usuario = new Cadastro_Usuario();
+				usuario.setVisible(true);
+				
+			}
+		});
 		menCadUsuario.setEnabled(false);
 		menuCadastros.add(menCadUsuario);
 		
 		JMenuItem menCadFuncionario = new JMenuItem("Funcion\u00E1rio");
+		menCadFuncionario.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				Cadastro_Funcionario funcionario = new Cadastro_Funcionario();
+				funcionario.setVisible(true);
+				
+			}
+		});
 		menCadFuncionario.setEnabled(false);
 		menuCadastros.add(menCadFuncionario);
 		
 		JMenuItem menCadCliente = new JMenuItem("Cliente");
+		menCadCliente.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				Cadastro_Cliente cliente = new Cadastro_Cliente();
+				cliente.setVisible(true);
+				
+			}
+		});
 		menuCadastros.add(menCadCliente);
 		
 		JMenuItem menCadFornecedor = new JMenuItem("Fornecedor");
+		menCadFornecedor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				Cadastro_Fornecedor fornecedor = new Cadastro_Fornecedor();
+				fornecedor.setVisible(true);
+				
+			}
+		});
 		menuCadastros.add(menCadFornecedor);
 		
 		JMenuItem menCadProduto = new JMenuItem("Produto");
+		menCadProduto.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				CadProduto produto = new CadProduto();
+				produto.setVisible(true);
+				
+			}
+		});
 		menuCadastros.add(menCadProduto);
 		
 		JMenuItem menCadServios = new JMenuItem("Servi\u00E7os");
@@ -137,16 +193,53 @@ public class TelaPrincipal extends JFrame {
 		JMenuItem menuConsultarOs = new JMenuItem("Consultar OS");
 		menuOrdemDeServico.add(menuConsultarOs);
 		
-		JMenuItem menuGerenciarOs = new JMenuItem("Gerenciar OS");
-		menuOrdemDeServico.add(menuGerenciarOs);
-		
 		JMenu menuRelatorios = new JMenu("Relat\u00F3rios");
 		menuBar.add(menuRelatorios);
 		
 		JMenuItem menClientesCad = new JMenuItem("Clientes Cadastrados");
+		menClientesCad.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//Gerando Relatório de Clientes Cadastrados
+				
+				int confirma = JOptionPane.showConfirmDialog(null, "Confirma a impressão do relatório Cliente?", "Atenção", JOptionPane.YES_NO_OPTION);
+				
+				if(confirma == JOptionPane.YES_OPTION) {
+					//Imprimindo o relatório com o JasperReport
+					try {
+						//Usando a classe JasperPrint para preparar a impressão do relatório
+						JasperPrint print = JasperFillManager.fillReport("Dependencias/Relatorios/cliente.jasper",null,conexao);
+						//A classe a baixo exibe o relatório através da classe JasperView
+						JasperViewer.viewReport(print, false);
+					} catch (Exception e) {
+						JOptionPane.showMessageDialog(null, e);
+					}
+				}
+			}
+		});
 		menuRelatorios.add(menClientesCad);
 		
 		JMenuItem menuOsGeradas = new JMenuItem("OS Geradas");
+		menuOsGeradas.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				//Gerando Relatório de Ordens de Serviços Geradas
+				
+				int confirma = JOptionPane.showConfirmDialog(null, "Confirma a Emissão do relatório OS Geradas?", "Atenção", JOptionPane.YES_NO_OPTION);
+				
+				if(confirma == JOptionPane.YES_OPTION) {
+					//Imprimindo o relatório com o JasperReport
+					try {
+						//Usando a classe JasperPrint para preparar a impressão do relatório
+						JasperPrint print = JasperFillManager.fillReport("Dependencias/Relatorios/servicos.jasper",null,conexao);
+						//A classe a baixo exibe o relatório através da classe JasperView
+						JasperViewer.viewReport(print, false);
+					} catch (Exception e) {
+						JOptionPane.showMessageDialog(null, e);
+					}
+				}
+				
+			}
+		});
 		menuRelatorios.add(menuOsGeradas);
 		
 		JMenuItem menuOsPendentes = new JMenuItem("OS Pendentes");
