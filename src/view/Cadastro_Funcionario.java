@@ -12,6 +12,7 @@ import javax.swing.border.TitledBorder;
 
 import controller.CrudBDCliente;
 import controller.DadosCFU;
+import controller.conexao;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -24,17 +25,18 @@ import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowFocusListener;
+import java.awt.event.WindowEvent;
+import javax.swing.SwingConstants;
 
 public class Cadastro_Funcionario extends JFrame {
 
 	private JPanel contentPane;
 	protected JTextField txtNome;
 	protected JTextField txtCPF;
-	protected JTextField txtEndereco;
+	protected JTextField txtRG;
 	protected JTextField txtEmail;
-	protected JTextField txtCep;
 	protected JTextField txtTelefone;
-	protected JTextField txtFax;
 	protected JTextField txtPesquisarCad;
 	private JTextField txtID;
 	
@@ -54,17 +56,47 @@ public class Cadastro_Funcionario extends JFrame {
 			}
 		});
 	}
+	
+	public void CarregarID() {
+		conexao con = new conexao();
+		
+		String sql = "select count(nome_Func) as total from funcionarios";
+		
+		ResultSet res = con.executaBusca(sql);
+		
+		int totalCad = 0;
+		
+		try {
+			
+			while(res.next()) {
+				
+				totalCad = Integer.parseInt(res.getString("total"));
+				
+				txtID.setText(Integer.toString(totalCad + 1));
+			}
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e);
+		}
+	}
 
 	/**
 	 * Create the frame.
 	 */
 	public Cadastro_Funcionario() {
+		addWindowFocusListener(new WindowFocusListener() {
+			public void windowGainedFocus(WindowEvent e) {
+				CarregarID();
+			}
+			public void windowLostFocus(WindowEvent e) {
+			}
+		});
 		setResizable(false);
 		setTitle("Cadastro");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 460, 377);
 		contentPane = new JPanel();
-		contentPane.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Cadastro de Cliente", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		contentPane.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Cadastro de Funcion\u00E1rio", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		setContentPane(contentPane);
 		
 		this.setLocationRelativeTo(this);
@@ -75,20 +107,14 @@ public class Cadastro_Funcionario extends JFrame {
 		JLabel lblCnpj = new JLabel("CPF:");
 		lblCnpj.setBounds(11, 137, 49, 14);
 		
-		JLabel lblEndereo = new JLabel("Endere\u00E7o:");
-		lblEndereo.setBounds(11, 165, 79, 14);
+		JLabel lblRG = new JLabel("RG:");
+		lblRG.setBounds(11, 165, 79, 14);
 		
 		JLabel lblEmail = new JLabel("E-mail:");
-		lblEmail.setBounds(11, 221, 49, 14);
+		lblEmail.setBounds(11, 193, 49, 14);
 		
 		JLabel lblTelefone = new JLabel("Telefone:");
-		lblTelefone.setBounds(11, 249, 79, 14);
-		
-		JLabel lblFax = new JLabel("Fax:");
-		lblFax.setBounds(251, 249, 30, 14);
-		
-		JLabel lblCep = new JLabel("Cep:");
-		lblCep.setBounds(11, 193, 49, 14);
+		lblTelefone.setBounds(11, 221, 79, 14);
 		
 		txtNome = new JTextField();
 		txtNome.setBounds(100, 106, 319, 20);
@@ -98,25 +124,17 @@ public class Cadastro_Funcionario extends JFrame {
 		txtCPF.setBounds(100, 134, 130, 20);
 		txtCPF.setColumns(10);
 		
-		txtEndereco = new JTextField();
-		txtEndereco.setBounds(100, 162, 319, 20);
-		txtEndereco.setColumns(10);
+		txtRG = new JTextField();
+		txtRG.setBounds(100, 162, 130, 20);
+		txtRG.setColumns(10);
 		
 		txtEmail = new JTextField();
-		txtEmail.setBounds(100, 218, 319, 20);
+		txtEmail.setBounds(100, 190, 319, 20);
 		txtEmail.setColumns(10);
 		
-		txtCep = new JTextField();
-		txtCep.setBounds(100, 190, 130, 20);
-		txtCep.setColumns(10);
-		
 		txtTelefone = new JTextField();
-		txtTelefone.setBounds(100, 246, 130, 20);
+		txtTelefone.setBounds(100, 218, 130, 20);
 		txtTelefone.setColumns(10);
-		
-		txtFax = new JTextField();
-		txtFax.setBounds(289, 246, 130, 20);
-		txtFax.setColumns(10);
 		
 		JButton btnCadastrar = new JButton("Cadastrar");
 		
@@ -131,17 +149,13 @@ public class Cadastro_Funcionario extends JFrame {
 		contentPane.add(lblRazoSocial);
 		contentPane.add(lblCnpj);
 		contentPane.add(lblEmail);
-		contentPane.add(lblCep);
-		contentPane.add(lblEndereo);
+		contentPane.add(lblRG);
 		contentPane.add(lblTelefone);
 		contentPane.add(txtTelefone);
-		contentPane.add(lblFax);
-		contentPane.add(txtFax);
-		contentPane.add(txtCep);
 		contentPane.add(txtCPF);
 		contentPane.add(txtNome);
 		contentPane.add(txtEmail);
-		contentPane.add(txtEndereco);
+		contentPane.add(txtRG);
 		
 		JButton btnAlterar = new JButton("Alterar");
 		
@@ -157,23 +171,36 @@ public class Cadastro_Funcionario extends JFrame {
 		btnPesquisar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				//INSTANCIANDO UM OBJETO PARA PEGAR O CPF DO CLINTE PARA PODER FAZER A BUSCA NO BD	
+				conexao con = new conexao();
+				//CADASTRANDO OS DADOS NO BD
 				
-				DadosCFU cliente = new DadosCFU();
-				cliente.setCpf(txtPesquisarCad.getText());
-				
-				//FAZENDO A CONEXÃO COM O BANCO E CHAMANDO O MÉTODO QUE RETORNARÁ A CONSULTA COM OS DADOS
-				
-				CrudBDCliente dao = new CrudBDCliente();
-				dao.BuscarCliente(cliente);
-				txtID.setText(cliente.getIdC());
-				txtNome.setText(cliente.getNome());;
-				txtCPF.setText(cliente.getCpf());
-				txtEndereco.setText(cliente.getEndereco());
-				txtCep.setText(cliente.getCep());
-				txtEmail.setText(cliente.getEmail());
-				txtTelefone.setText(cliente.getTelefone());
-				txtFax.setText(cliente.getFax());
+				try {
+					//VARIÁVEL QUE PEGARÁ OS DADOS PARA SEREM INSERIDOS NO BD
+					String sql;
+					sql = "insert into funcionarios(id_func, nome_func, cpf_func, rg_func, email_func,)"
+							+ "values('"+txtID.getText()+"', '"+txtNome.getText()+"','"+txtCPF.getText()+"','"+txtRG.getText()+"',"+
+							"'"+txtEmail.getText()+"');";
+					con.executaSQL(sql);
+					
+					//LIMPANDO OS CAMPOS
+					
+					txtNome.setText(null);
+					txtCPF.setText(null);
+					txtRG.setText(null);
+					txtEmail.setText(null);
+					txtTelefone.setText(null);
+					
+					
+					//FIM LIMPAR CAMPOS
+					//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
+					
+					txtNome.requestFocus();
+					
+					JOptionPane.showMessageDialog(null, "Cadastro Realizado com sucesso!!!");
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				
 			}
 		});
@@ -189,35 +216,43 @@ public class Cadastro_Funcionario extends JFrame {
 
 				//PEGANDO OS DADOS E SETANDO NOS ATRIBUTOS DA CLASSE DADOSCFU 
 				
-				DadosCFU cliente = new DadosCFU();
-				cliente.setNome(txtNome.getText());
-				cliente.setCpf(txtCPF.getText());
-				cliente.setEndereco(txtEndereco.getText());
-				cliente.setCep(txtCep.getText());
-				cliente.setEmail(txtEmail.getText());
-				cliente.setTelefone(txtTelefone.getText());
-				cliente.setFax(txtFax.getText());
-				
 				if(txtNome.getText().isEmpty()) {
 					JOptionPane.showMessageDialog(null, "Informe o Nome do Cliente!!!");
 				}else if(txtCPF.getText().isEmpty()){
 						JOptionPane.showMessageDialog(null, "Informe o CPF do Cliente!!!");
-					}else if(txtEndereco.getText().isEmpty()) {
+					}else if(txtRG.getText().isEmpty()) {
 						JOptionPane.showMessageDialog(null, "Informe o Endereço do Cliente!!!");
 				}else {
-					CrudBDCliente dao = new CrudBDCliente();
-					dao.InserirCliente(cliente);
+					conexao con = new conexao();
+					//CADASTRANDO OS DADOS NO BD
+					
+					try {
+						//VARIÁVEL QUE PEGARÁ OS DADOS PARA SEREM INSERIDOS NO BD
+						String sql;
+						sql = "insert into funcionarios(id_func, nome_func, cpf_func, rg_func, email_func)"
+								+ "values('"+txtID.getText()+"', '"+txtNome.getText()+"','"+txtCPF.getText()+"', '"+txtRG.getText()+"', '"+txtEmail.getText()+"');";
+						con.executaSQL(sql);
+						
+						
+						//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
+						
+						txtNome.requestFocus();
+						
+						JOptionPane.showMessageDialog(null, "Cadastro Realizado com sucesso!!!");
+						
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
 				
 				//LIMPANDO OS CAMPOS
 				txtID.setText(null);
 				txtPesquisarCad.setText(null);
 				txtNome.setText(null);
 				txtCPF.setText(null);
-				txtEndereco.setText(null);
+				txtRG.setText(null);
 				txtEmail.setText(null);
-				txtCep.setText(null);
 				txtTelefone.setText(null);
-				txtFax.setText(null);
+				
 				//FIM LIMPAR CAMPOS
 					
 					JOptionPane.showMessageDialog(null, "Cadastro Realizado Com Sucesso!!!");
@@ -233,16 +268,15 @@ public class Cadastro_Funcionario extends JFrame {
 				txtPesquisarCad.setText(null);
 				txtNome.setText(null);
 				txtCPF.setText(null);
-				txtEndereco.setText(null);
+				txtRG.setText(null);
 				txtEmail.setText(null);
-				txtCep.setText(null);
 				txtTelefone.setText(null);
-				txtFax.setText(null);
+
 				//FIM LIMPAR CAMPOS
 				//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
 				
 				txtNome.requestFocus();
-				
+				CarregarID();
 			}
 		});
 		
@@ -255,11 +289,11 @@ public class Cadastro_Funcionario extends JFrame {
 				cliente.setIdC(txtID.getText());
 				cliente.setNome(txtNome.getText());
 				cliente.setCpf(txtCPF.getText());
-				cliente.setEndereco(txtEndereco.getText());
-				cliente.setCep(txtCep.getText());
+				cliente.setEndereco(txtRG.getText());
+
 				cliente.setEmail(txtEmail.getText());
 				cliente.setTelefone(txtTelefone.getText());
-				cliente.setFax(txtFax.getText());
+
 				
 				//ALTERANDO OS DADOS DO USUÁRIO
 				
@@ -275,11 +309,10 @@ public class Cadastro_Funcionario extends JFrame {
 					txtID.setText(null);
 					txtNome.setText(null);
 					txtCPF.setText(null);
-					txtEndereco.setText(null);
+					txtRG.setText(null);
 					txtEmail.setText(null);
-					txtCep.setText(null);
+
 					txtTelefone.setText(null);
-					txtFax.setText(null);
 					txtPesquisarCad.setText(null);
 					//FIM LIMPAR CAMPOS
 					//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
@@ -318,11 +351,10 @@ public class Cadastro_Funcionario extends JFrame {
 						txtPesquisarCad.setText(null);
 						txtNome.setText(null);
 						txtCPF.setText(null);
-						txtEndereco.setText(null);
+						txtRG.setText(null);
 						txtEmail.setText(null);
-						txtCep.setText(null);
 						txtTelefone.setText(null);
-						txtFax.setText(null);
+
 						//FIM LIMPAR CAMPOS
 						//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
 						
@@ -339,6 +371,7 @@ public class Cadastro_Funcionario extends JFrame {
 		contentPane.add(lblId);
 		
 		txtID = new JTextField();
+		txtID.setHorizontalAlignment(SwingConstants.CENTER);
 		txtID.setEditable(false);
 		txtID.setBounds(31, 18, 58, 20);
 		contentPane.add(txtID);

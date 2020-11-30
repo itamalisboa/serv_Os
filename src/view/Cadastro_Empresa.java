@@ -22,6 +22,9 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowFocusListener;
+import java.awt.event.WindowEvent;
+import javax.swing.SwingConstants;
 
 public class Cadastro_Empresa extends JFrame {
 
@@ -50,11 +53,41 @@ public class Cadastro_Empresa extends JFrame {
 			}
 		});
 	}
+	
+	public void CarregarID() {
+		conexao con = new conexao();
+		
+		String sql = "select count(nome_emp) as total from empresa";
+		
+		ResultSet res = con.executaBusca(sql);
+		
+		int totalCad = 0;
+		
+		try {
+			
+			while(res.next()) {
+				
+				totalCad = Integer.parseInt(res.getString("total"));
+				
+				txtIdEmp.setText(Integer.toString(totalCad + 1));
+			}
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e);
+		}
+	}
 
 	/**
 	 * Create the frame.
 	 */
 	public Cadastro_Empresa() {
+		addWindowFocusListener(new WindowFocusListener() {
+			public void windowGainedFocus(WindowEvent arg0) {
+				CarregarID();
+			}
+			public void windowLostFocus(WindowEvent arg0) {
+			}
+		});
 		setResizable(false);
 		setTitle("Cadastro");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -168,6 +201,7 @@ public class Cadastro_Empresa extends JFrame {
 				//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
 				
 				txtRazaoSocial.requestFocus();
+				CarregarID();
 				
 			}
 		});
@@ -295,6 +329,8 @@ public class Cadastro_Empresa extends JFrame {
 		contentPane.add(lblId);
 		
 		txtIdEmp = new JTextField();
+		txtIdEmp.setEditable(false);
+		txtIdEmp.setHorizontalAlignment(SwingConstants.CENTER);
 		txtIdEmp.setBounds(37, 23, 66, 20);
 		contentPane.add(txtIdEmp);
 		txtIdEmp.setColumns(10);

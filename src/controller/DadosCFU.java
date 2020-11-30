@@ -16,6 +16,7 @@ public class DadosCFU {
 	public String senha;
 	public String idC;
 	public String idF;
+	public String registros;
 	
 	//---------------------------------------------------
 	//GET E SET
@@ -134,6 +135,14 @@ public class DadosCFU {
 
 	public void setRg(String rg) {
 		this.rg = rg;
+	}
+
+	public String getRegistros() {
+		return registros;
+	}
+
+	public void setRegistros(String registros) {
+		this.registros = registros;
 	}
 	
 	
