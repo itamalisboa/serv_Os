@@ -191,6 +191,27 @@ public class TelaPrincipal extends JFrame {
 		menuOrdemDeServico.add(menuGerarOs);
 		
 		JMenuItem menuConsultarOs = new JMenuItem("Consultar OS");
+		menuConsultarOs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//Gerando Relatório de Ordens de Serviços Geradas
+				
+				int confirma = JOptionPane.showConfirmDialog(null, "Confirma a Impressão da OS?", "Atenção", JOptionPane.YES_NO_OPTION);
+				
+				if(confirma == JOptionPane.YES_OPTION) {
+					//Imprimindo o relatório com o JasperReport
+					try {
+						//Usando a classe JasperPrint para preparar a impressão do relatório
+						JasperPrint print = JasperFillManager.fillReport("Dependencias/Relatorios/ordemservico.jasper",null,conexao);
+						//A classe a baixo exibe o relatório através da classe JasperView
+						JasperViewer.viewReport(print, false);
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, ex);
+					}
+				}
+				
+			}
+		});
 		menuOrdemDeServico.add(menuConsultarOs);
 		
 		JMenu menuRelatorios = new JMenu("Relat\u00F3rios");

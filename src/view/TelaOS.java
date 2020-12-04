@@ -32,9 +32,9 @@ import javax.swing.border.SoftBevelBorder;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 
 import controller.ConexaoDao;
+import controller.conexao;
 import controller.os_Dao;
 import model.model_OS;
 import net.proteanit.sql.DbUtils;
@@ -46,6 +46,12 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowFocusListener;
+import java.awt.event.WindowEvent;
+import java.util.*;
+import java.util.Date;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;;
 
 public class TelaOS extends JFrame {
 	
@@ -95,6 +101,29 @@ public class TelaOS extends JFrame {
 		txtIdCliente.setText(jtbClienteOS.getModel().getValueAt(setar, 0).toString());
 	}
 	
+	public void CarregarID() {
+		conexao con = new conexao();
+		
+		String sql = "select count(codo_serv) as total from ordemservico";
+		
+		ResultSet res = con.executaBusca(sql);
+		
+		int totalCad = 0;
+		
+		try {
+			
+			while(res.next()) {
+				
+				totalCad = Integer.parseInt(res.getString("total"));
+				
+				txtNumOS.setText(Integer.toString(totalCad + 1));
+			}
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e);
+		}
+	}
+	
 	
 	//Método para cadastro de uma OS
 	
@@ -107,6 +136,8 @@ public class TelaOS extends JFrame {
 	//Imprimindo uma OS
 	
 	private void imprimir_OS() {
+		
+		conexao = ConexaoDao.conector();
 		
 		//Imprmindo Uma Ordens de Serviços Geradas
 		
@@ -165,6 +196,126 @@ public class TelaOS extends JFrame {
 	 * Create the frame.
 	 */
 	public TelaOS() {
+		
+		JLabel lblStatus = new JLabel("status");
+		JLabel lblAutorizar = new JLabel("");
+		JLabel lblTotalOs = new JLabel("totalOS");
+		
+		
+		lblAutorizar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				
+				lblStatus.setText("Em Andamento");
+				
+				//ALTERANDO OS DADOS DO USUÁRIO
+				
+				
+				
+				try {
+					
+					if(txtNumOS.getText().equals("")) {
+						JOptionPane.showMessageDialog(null, "Informe o código do serviço no campo Nº OS!!!");
+					}else {
+					//EFETUANDO A CONEXÃO
+					conexao con = new conexao();
+					
+					//VARIÁVEL QUE PEGARÁ OS DADOS PARA SEREM ATUALIZADOS NO BD
+					String sql;
+					sql = "update ordemservico set status_serv='"+lblStatus.getText()+"' where codo_serv ='"+txtNumOS.getText()+"';";
+					con.executaSQL(sql);
+					
+					txtPesquisarCliente.setText(null);
+					txtDataOS.setText(null);
+					txtDataExecOS.setText(null);
+					txtIdCliente.setText(null);
+					txtNumOS.setText(null);
+					txtTecResp.setText(null);
+					txtAreaAplic.setText(null);
+					txtValUnitServ.setText(null);
+					lblTotalOs.setText("0.0");
+					
+					//RETORNANDO O FOCU NO Campo NUm OS
+					
+					txtNumOS.requestFocus();
+					
+					JOptionPane.showMessageDialog(null, "Alteração Realizada com sucesso!!!");
+					lblAutorizar.setEnabled(false);
+					
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				lblStatus.setText("Em Andamento");
+				
+			}
+		});
+		JLabel lblExecutaros = new JLabel("");
+		lblExecutaros.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				
+				
+				//ALTERANDO OS DADOS DO USUÁRIO
+				
+				
+				
+				try {
+					
+					if(txtNumOS.getText().equals("")) {
+						JOptionPane.showMessageDialog(null, "Informe o código do serviço no campo Nº OS!!!");
+					}else {
+						
+						lblStatus.setText("OS Executada");
+						
+					//EFETUANDO A CONEXÃO
+					conexao con = new conexao();
+					
+					//VARIÁVEL QUE PEGARÁ OS DADOS PARA SEREM ATUALIZADOS NO BD
+					String sql;
+					sql = "update ordemservico set status_serv='"+lblStatus.getText()+"' where codo_serv ='"+txtNumOS.getText()+"';";
+					con.executaSQL(sql);
+					
+					txtPesquisarCliente.setText(null);
+					txtDataOS.setText(null);
+					txtDataExecOS.setText(null);
+					txtIdCliente.setText(null);
+					txtNumOS.setText(null);
+					txtTecResp.setText(null);
+					txtAreaAplic.setText(null);
+					txtValUnitServ.setText(null);
+					lblTotalOs.setText("0.0");
+					
+					//RETORNANDO O FOCU NO Campo NUm OS
+					
+					txtNumOS.requestFocus();
+					
+					JOptionPane.showMessageDialog(null, "Alteração Realizada com sucesso!!!");
+					lblAutorizar.setEnabled(false);
+					
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				
+				lblStatus.setText("Executada");
+				
+			}
+		});
+		
+		addWindowFocusListener(new WindowFocusListener() {
+			public void windowGainedFocus(WindowEvent arg0) {
+				CarregarID();
+				Date data = new Date();
+				SimpleDateFormat formato = new SimpleDateFormat("dd-MM-yyyy");
+				txtDataOS.setText(formato.format(data));
+				lblStatus.setText("Orçamento");
+			}
+			public void windowLostFocus(WindowEvent arg0) {
+			}
+		});
 		setResizable(false);
 		
 			
@@ -193,49 +344,25 @@ public class TelaOS extends JFrame {
 		panel.add(lblDataOs);
 		
 		txtDataOS = new JTextField();
+		txtDataOS.setHorizontalAlignment(SwingConstants.CENTER);
+		txtDataOS.setEditable(false);
 		txtDataOS.setBounds(132, 36, 86, 20);
 		panel.add(txtDataOS);
 		txtDataOS.setColumns(10);
 		
 		txtNumOS = new JTextField();
+		txtNumOS.setHorizontalAlignment(SwingConstants.CENTER);
 		txtNumOS.setBounds(29, 36, 71, 20);
 		panel.add(txtNumOS);
 		txtNumOS.setColumns(10);
 		
-		JRadioButton rdbtnOrcamento = new JRadioButton("Or\u00E7amento");
-		rdbtnOrcamento.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				//Adicionando um valor a variável tipo caso selecionado
-				tipo = "Orçamento";
-			}
-		});
-		rdbtnOrcamento.setBackground(new Color(64, 224, 208));
-		rdbtnOrcamento.setSelected(true);
-		buttonGroup.add(rdbtnOrcamento);
-		rdbtnOrcamento.setBounds(6, 82, 94, 23);
-		panel.add(rdbtnOrcamento);
+		JLabel lblSituao = new JLabel("Status:");
+		lblSituao.setBounds(10, 87, 55, 14);
+		panel.add(lblSituao);
 		
-		JRadioButton rdbtnOrdemDeServico = new JRadioButton("Ordem de Servi\u00E7o");
-		rdbtnOrdemDeServico.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//Adicionando um valor a variável tipo caso selecionado
-				tipo = "OS";
-			}
-		});
-		rdbtnOrdemDeServico.setBackground(new Color(64, 224, 208));
-		buttonGroup.add(rdbtnOrdemDeServico);
-		rdbtnOrdemDeServico.setBounds(102, 82, 142, 23);
-		panel.add(rdbtnOrdemDeServico);
 		
-		JLabel lblSituao = new JLabel("Situa\u00E7\u00E3o:");
-		lblSituao.setBounds(10, 140, 55, 14);
-		contentPane.add(lblSituao);
-		
-		JComboBox cboSituacao = new JComboBox();
-		cboSituacao.setBackground(Color.WHITE);
-		cboSituacao.setModel(new DefaultComboBoxModel(new String[] {"Or\u00E7amento", "Em Andamento", "Agendada", "Executada"}));
-		cboSituacao.setBounds(70, 137, 165, 20);
-		contentPane.add(cboSituacao);
+		lblStatus.setBounds(62, 87, 156, 14);
+		panel.add(lblStatus);
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(new Color(64, 224, 208));
@@ -317,7 +444,31 @@ public class TelaOS extends JFrame {
 		lblrea.setBounds(10, 242, 46, 14);
 		contentPane.add(lblrea);
 		
+		
+		
 		txtAreaAplic = new JTextField();
+		txtAreaAplic.setHorizontalAlignment(SwingConstants.CENTER);
+		txtAreaAplic.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				
+				if(txtAreaAplic.getText().isEmpty()) {
+					areaAplic = 0;
+					JOptionPane.showMessageDialog(null, "Informe a área de aplicação para calcular o valor da OS/Orçamento!");
+					txtAreaAplic.requestFocus();
+				}else {
+					areaAplic = Float.parseFloat(txtAreaAplic.getText());
+					
+					valorUnitServ = Float.parseFloat(txtValUnitServ.getText());
+				}
+				
+					
+				totalOS = valorUnitServ * areaAplic;
+					
+				lblTotalOs.setText(Float.toString(totalOS));
+				
+			}
+		});
 		txtAreaAplic.setBounds(62, 239, 107, 20);
 		contentPane.add(txtAreaAplic);
 		txtAreaAplic.setColumns(10);
@@ -327,6 +478,7 @@ public class TelaOS extends JFrame {
 		contentPane.add(lblDataExecuo);
 		
 		txtDataExecOS = new JTextField();
+		txtDataExecOS.setHorizontalAlignment(SwingConstants.CENTER);
 		txtDataExecOS.setBounds(270, 239, 126, 20);
 		contentPane.add(txtDataExecOS);
 		txtDataExecOS.setColumns(10);
@@ -336,6 +488,7 @@ public class TelaOS extends JFrame {
 		contentPane.add(lblPreoUnitM);
 		
 		txtValUnitServ = new JTextField();
+		txtValUnitServ.setHorizontalAlignment(SwingConstants.CENTER);
 		txtValUnitServ.setBounds(497, 196, 122, 20);
 		contentPane.add(txtValUnitServ);
 		txtValUnitServ.setColumns(10);
@@ -365,26 +518,18 @@ public class TelaOS extends JFrame {
 		JLabel lblCadastrarOS = new JLabel("");
 		lblCadastrarOS.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		lblCadastrarOS.setToolTipText("Cadastrar");
-		lblCadastrarOS.setBounds(182, 10, 48, 48);
+		lblCadastrarOS.setBounds(154, 11, 48, 48);
 		panel_2.add(lblCadastrarOS);
 		
-		JLabel lblTotalOs = new JLabel("totalOS");
+		
 		
 		lblCadastrarOS.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				
 				String sql = "INSERT INTO public.ordemservico(\r\n" + 
-						"	codo_serv, id_cliente, cod_serv, id_func, data_os, data_exec, status_serv, tipoos_orc)\r\n" + 
-						"	VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-				
-				areaAplic = Float.parseFloat(txtAreaAplic.getText());
-				
-				valorUnitServ = Float.parseFloat(txtValUnitServ.getText());
-					
-				totalOS = valorUnitServ * areaAplic;
-					
-				lblTotalOs.setText(Float.toString(totalOS));
+						"	codo_serv, id_cliente, cod_serv, id_func, data_os, data_exec, areaaplic, precounit, status_serv)\r\n" + 
+						"	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
 				
 				
 				try {
@@ -395,8 +540,9 @@ public class TelaOS extends JFrame {
 					pst.setInt(4, Integer.parseInt(txtTecResp.getText()));
 					pst.setString(5, txtDataOS.getText());
 					pst.setString(6, txtDataExecOS.getText());
-					pst.setString(7, cboSituacao.getSelectedItem().toString());
-					pst.setString(8, tipo);
+					pst.setFloat(7, Float.parseFloat(txtAreaAplic.getText()));
+					pst.setFloat(8, Float.parseFloat(txtValUnitServ.getText()));
+					pst.setString(9,  lblStatus.getText());
 					
 					//Validação dos campos obrigatórios
 					
@@ -414,6 +560,8 @@ public class TelaOS extends JFrame {
 							txtNumOS.setText(null);
 							txtTecResp.setText(null);
 							txtAreaAplic.setText(null);
+							txtValUnitServ.setText(null);
+							lblTotalOs.setText("0.0");
 							
 						}
 					}
@@ -426,44 +574,213 @@ public class TelaOS extends JFrame {
 		});
 		lblCadastrarOS.setIcon(new ImageIcon(TelaOS.class.getResource("/br/com/servos/imgs/salvar_48x48.png")));
 		
+		
+		
 		JLabel lblConsultar = new JLabel("");
 		lblConsultar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				//Pesquisando uma OS
 				
-				model_OS os = new model_OS();
+				//Chamando o método de conexão com o BD;
 				
-				os.setCodo_serv(Integer.parseInt(JOptionPane.showInputDialog("Informe o nº da OS!")));
+				conexao con = new conexao();
 				
-				os_Dao dao = new os_Dao();
+				//CADASTRANDO OS DADOS NO BD
 				
-				dao.pesquisar_os(os);
-				txtNumOS.setText(Integer.toString(os.getCodo_serv()));
-				txtIdCliente.setText(Integer.toString(os.getId_cliente()));
-				txtDataOS.setText(os.getData_os());
+				model_OS status = new model_OS();
+				
+				String sql = "select * from ordemservico where codo_serv = '"+txtNumOS.getText()+"'";
+				
+				
+				ResultSet res = con.executaBusca(sql);
+				
+				try {
+					
+					while(res.next()) {
+						
+							//txtNumOS.setText(res.getString("codo_serv"));
+							txtIdCliente.setText(res.getString("id_cliente"));
+							 cboServico.setSelectedItem(res.getString("cod_serv"));
+							 txtTecResp.setText(res.getString("id_func"));
+							 txtDataOS.setText(res.getString("data_os"));
+							 txtDataExecOS.setText(res.getString("data_exec"));
+							 lblStatus.setText(res.getString("status_serv"));
+							 txtValUnitServ.setText(res.getString("precounit"));
+							 txtAreaAplic.setText(res.getString("areaaplic"));
+							 
+							 status.setStatus(res.getString("status_serv"));
+							 
+					}
+					res.close();
+					
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				if(txtAreaAplic.getText().isEmpty()) {
+					areaAplic = 0;
+					
+				}else {
+					areaAplic = Float.parseFloat(txtAreaAplic.getText());
+					
+					valorUnitServ = Float.parseFloat(txtValUnitServ.getText());
+				}
+				
+					
+				totalOS = valorUnitServ * areaAplic;
+					
+				lblTotalOs.setText(Float.toString(totalOS));
+				System.out.println(status.getStatus());
+				
+				if(status.getStatus().equals("Orçamento")) {
+					lblAutorizar.setEnabled(true);	
+				}else {
+					lblExecutaros.setEnabled(true);
+				}
+				
+				
 				
 			}
 		});
 		lblConsultar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		lblConsultar.setToolTipText("Pesquisar");
-		lblConsultar.setBounds(245, 10, 48, 48);
+		lblConsultar.setBounds(217, 11, 48, 48);
 		panel_2.add(lblConsultar);
 		lblConsultar.setHorizontalAlignment(SwingConstants.CENTER);
 		lblConsultar.setIcon(new ImageIcon(TelaOS.class.getResource("/br/com/servos/imgs/buscar_48x48.png")));
 		
 		JLabel lblEditar = new JLabel("");
+		lblEditar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				
+				//ALTERANDO OS DADOS DO USUÁRIO
+				
+				
+				
+				try {
+					
+					if(txtNumOS.getText().equals("")) {
+						JOptionPane.showMessageDialog(null, "Informe o código do serviço no campo Nº OS!!!");
+					}else {
+					//EFETUANDO A CONEXÃO
+					conexao con = new conexao();
+					
+					//VARIÁVEL QUE PEGARÁ OS DADOS PARA SEREM ATUALIZADOS NO BD
+					String sql;
+					sql = "update ordemservico set id_cliente='"+txtIdCliente.getText()+"', cod_serv='"+cboServico.getSelectedIndex()+"', id_func='"+txtTecResp.getText()+"', data_os='"+txtDataOS.getText()+"', data_exec='"+txtDataExecOS.getText()+"', status_serv='"+lblStatus.getText()+"', areaaplic='"+txtAreaAplic.getText()+"', precounit='"+txtValUnitServ.getText()+"' where codo_serv ='"+txtNumOS.getText()+"';";
+					con.executaSQL(sql);
+					
+					//LIMPANDO OS CAMPOS
+					
+					txtPesquisarCliente.setText(null);
+					txtDataOS.setText(null);
+					txtDataExecOS.setText(null);
+					txtIdCliente.setText(null);
+					txtNumOS.setText(null);
+					txtTecResp.setText(null);
+					txtAreaAplic.setText(null);
+					txtValUnitServ.setText(null);
+					lblTotalOs.setText("0.0");
+					
+					
+					//FIM LIMPAR CAMPOS
+					//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
+					
+					txtNumOS.requestFocus();
+					
+					JOptionPane.showMessageDialog(null, "Alteração Realizada com sucesso!!!");
+					
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+			}
+		});
 		lblEditar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		lblEditar.setToolTipText("Editar");
-		lblEditar.setBounds(310, 10, 48, 48);
+		lblEditar.setBounds(282, 11, 48, 48);
 		panel_2.add(lblEditar);
 		lblEditar.setIcon(new ImageIcon(TelaOS.class.getResource("/br/com/servos/imgs/editar_48x48.png")));
 		lblEditar.setHorizontalAlignment(SwingConstants.CENTER);
 		
 		JLabel lblDeletar = new JLabel("");
+		lblDeletar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				
+				String os = "";
+				
+				//EXCLUÍNDO OS DADOS DO USUÁRIO
+				
+				//FAZENDO A CONEXÃO AO BD
+				
+				conexao con = new conexao();
+				
+				
+				//REALIZANDO UMA BUSCA NO BD
+				
+				String sql = "select * from ordemservico where codo_serv = '"+txtNumOS.getText()+"'";
+				ResultSet res = con.executaBusca(sql);
+				
+				try {
+					
+					while(res.next()) {
+						
+							os = res.getString("codo_serv");
+							 
+					}
+					res.close();
+					
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				if(os != "") {
+					try {
+						
+						//VARIÁVEL QUE PEGARÁ OS DADOS PARA SEREM EXCLUÍDOS DO BD
+						String sql2;
+						sql2 = "delete from ordemservico where codo_serv ='"+txtNumOS.getText()+"';";
+						con.executaSQL(sql2);
+						
+						//LIMPANDO OS CAMPOS
+						
+						txtDataExecOS.setText(null);
+						txtDataOS.setText(null);
+						txtNumOS.setText(null);
+						txtTecResp.setText(null);
+						txtAreaAplic.setText(null);
+						txtValUnitServ.setText(null);
+						lblTotalOs.setText("0.0");
+						
+						//FIM LIMPAR CAMPOS
+						//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
+						
+						txtPesquisarCliente.requestFocus();
+						
+						JOptionPane.showMessageDialog(null, "Exclusão Realizada com sucesso!!!");
+						
+						
+					} catch (Exception e2) {
+						e2.printStackTrace();
+					}
+				}else {
+					JOptionPane.showMessageDialog(null, "Número de OS não encontrada!");
+				}
+				
+				
+				
+				
+			}
+		});
 		lblDeletar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		lblDeletar.setToolTipText("Deletar");
-		lblDeletar.setBounds(371, 10, 48, 48);
+		lblDeletar.setBounds(343, 11, 48, 48);
 		panel_2.add(lblDeletar);
 		lblDeletar.setIcon(new ImageIcon(TelaOS.class.getResource("/br/com/servos/imgs/deletar_48x48.png")));
 		lblDeletar.setHorizontalAlignment(SwingConstants.CENTER);
@@ -481,10 +798,24 @@ public class TelaOS extends JFrame {
 		});
 		lblImprimir.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		lblImprimir.setToolTipText("Imprimir");
-		lblImprimir.setBounds(434, 10, 48, 48);
+		lblImprimir.setBounds(406, 11, 48, 48);
 		panel_2.add(lblImprimir);
 		lblImprimir.setIcon(new ImageIcon(TelaOS.class.getResource("/br/com/servos/imgs/imprimir_48x48.png")));
 		lblImprimir.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		
+		lblAutorizar.setEnabled(false);
+		lblAutorizar.setIcon(new ImageIcon(TelaOS.class.getResource("/br/com/servos/imgs/aprovar_48x48.png")));
+		lblAutorizar.setHorizontalAlignment(SwingConstants.CENTER);
+		lblAutorizar.setBounds(464, 11, 48, 48);
+		panel_2.add(lblAutorizar);
+		
+		
+		lblExecutaros.setEnabled(false);
+		lblExecutaros.setIcon(new ImageIcon(TelaOS.class.getResource("/br/com/servos/imgs/executarOS_48x48.png")));
+		lblExecutaros.setHorizontalAlignment(SwingConstants.CENTER);
+		lblExecutaros.setBounds(522, 11, 48, 48);
+		panel_2.add(lblExecutaros);
 		
 		
 		lblTotalOs.setBounds(561, 287, 46, 14);

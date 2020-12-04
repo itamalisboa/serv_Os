@@ -64,6 +64,7 @@ public class CadProduto extends JFrame {
 		contentPane.add(lblCodigo);
 		
 		txtCodProduto = new JTextField();
+		txtCodProduto.setEditable(false);
 		txtCodProduto.setBounds(66, 8, 66, 20);
 		contentPane.add(txtCodProduto);
 		txtCodProduto.setColumns(10);

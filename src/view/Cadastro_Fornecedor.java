@@ -64,7 +64,7 @@ public class Cadastro_Fornecedor extends JFrame {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 460, 379);
 		contentPane = new JPanel();
-		contentPane.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Cadastro de Cliente", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		contentPane.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Cadastro de Fornecedor", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		setContentPane(contentPane);
 		
 		this.setLocationRelativeTo(this);
@@ -72,7 +72,7 @@ public class Cadastro_Fornecedor extends JFrame {
 		JLabel lblRazoSocial = new JLabel("Nome:");
 		lblRazoSocial.setBounds(11, 109, 89, 14);
 		
-		JLabel lblCnpj = new JLabel("CPF:");
+		JLabel lblCnpj = new JLabel("CNPJ:");
 		lblCnpj.setBounds(11, 137, 49, 14);
 		
 		JLabel lblEndereo = new JLabel("Endere\u00E7o:");

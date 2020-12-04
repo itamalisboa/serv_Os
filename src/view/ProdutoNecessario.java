@@ -22,13 +22,16 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowFocusListener;
+import java.awt.event.WindowEvent;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import java.awt.Color;
 import javax.swing.JComboBox;
 
-public class Cadastro_Usuario extends JFrame {
+public class ProdutoNecessario extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField txtLogin;
-	private JPasswordField passUser;
 	private JTextField txtPesquisarCad;
 	private JTextField txtID;
 
@@ -39,7 +42,7 @@ public class Cadastro_Usuario extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Cadastro_Usuario frame = new Cadastro_Usuario();
+					ProdutoNecessario frame = new ProdutoNecessario();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -47,38 +50,59 @@ public class Cadastro_Usuario extends JFrame {
 			}
 		});
 	}
+	
+	public void CarregarID() {
+		conexao con = new conexao();
+		
+		String sql = "select count(id_prodnec) as total from produtonecessario";
+		
+		ResultSet res = con.executaBusca(sql);
+		
+		int totalCad = 0;
+		
+		try {
+			
+			while(res.next()) {
+				
+				totalCad = Integer.parseInt(res.getString("total"));
+				
+				txtID.setText(Integer.toString(totalCad + 1));
+			}
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e);
+		}
+	}
 
 	/**
 	 * Create the frame.
 	 */
-	public Cadastro_Usuario() {
+	public ProdutoNecessario() {
+		addWindowFocusListener(new WindowFocusListener() {
+			public void windowGainedFocus(WindowEvent arg0) {
+				CarregarID();
+			}
+			public void windowLostFocus(WindowEvent arg0) {
+			}
+		});
 		setResizable(false);
 		setTitle("Cadastro");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 484, 307);
+		setBounds(100, 100, 490, 333);
 		contentPane = new JPanel();
-		contentPane.setBorder(new TitledBorder(null, "Cadastro de Usu\u00E1rio", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		contentPane.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Cadastro de Produto Necess\u00E1rio", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		setContentPane(contentPane);
 		
 		this.setLocationRelativeTo(this);
 		
-		JLabel lblRazoSocial = new JLabel("N\u00EDvel:");
-		lblRazoSocial.setBounds(10, 90, 83, 14);
+		JLabel lblRazoSocial = new JLabel("Servi\u00E7o:");
+		lblRazoSocial.setBounds(10, 129, 83, 14);
 		
-		JLabel lblLogin = new JLabel("Login:");
-		lblLogin.setBounds(10, 124, 49, 14);
+		JLabel lblCnpj = new JLabel("Produto:");
+		lblCnpj.setBounds(10, 155, 49, 14);
 		
-		JLabel lblSenha = new JLabel("Senha:");
-		lblSenha.setBounds(10, 152, 49, 14);
-		
-		txtLogin = new JTextField();
-		txtLogin.setBounds(103, 121, 249, 20);
-		txtLogin.setColumns(10);
-		
-		passUser = new JPasswordField();
-		passUser.setBounds(103, 152, 130, 20);
-		
-		JComboBox cboTipoUsu = new JComboBox();
+		JComboBox cboServico = new JComboBox();
+		JComboBox cboProduto = new JComboBox();
 		
 		JButton btnCadastrarUser = new JButton("Cadastrar");
 		btnCadastrarUser.addActionListener(new ActionListener() {
@@ -90,20 +114,14 @@ public class Cadastro_Usuario extends JFrame {
 				try {
 					//VARIÁVEL QUE PEGARÁ OS DADOS PARA SEREM INSERIDOS NO BD
 					String sql;
-					sql = "insert into usuarios(tipo, login,senha)"
-							+ "values('"+cboTipoUsu.getSelectedIndex()+"','"+txtLogin.getText()+"',"+
-							"'"+passUser.getPassword()+"');";
+					sql = "insert into produtonecessario(id_prodnec, cod_prod, cod_serv)"
+							+ "values('"+txtID.getText()+"', '"+cboProduto.getSelectedIndex()+"','"+cboServico.getSelectedIndex()+"');";
 					con.executaSQL(sql);
 					
-					//LIMPANDO OS CAMPOS
 					
-					
-					txtLogin.setText(null);
-					passUser.setText(null);
-					//FIM LIMPAR CAMPOS
 					//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
 					
-					txtLogin.requestFocus();
+					txtPesquisarCad.requestFocus();
 					
 					JOptionPane.showMessageDialog(null, "Cadastro Realizado com sucesso!!!");
 					
@@ -115,45 +133,20 @@ public class Cadastro_Usuario extends JFrame {
 				
 			}
 		});
-		btnCadastrarUser.setBounds(45, 221, 100, 23);
-		
-		JButton btnLimpar = new JButton("Limpar");
-		btnLimpar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-				//LIMPANDO OS CAMPOS
-				
-				txtPesquisarCad.setText(null);
-				txtLogin.setText(null);
-				passUser.setText(null);
-				
-				//FIM LIMPAR CAMPOS
-				//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
-				
-				txtLogin.requestFocus();
-				
-			}
-		});
-		btnLimpar.setBounds(351, 221, 100, 23);
+		btnCadastrarUser.setBounds(37, 247, 100, 23);
 		contentPane.setLayout(null);
 		contentPane.add(btnCadastrarUser);
-		contentPane.add(btnLimpar);
 		contentPane.add(lblRazoSocial);
-		contentPane.add(lblLogin);
-		contentPane.add(lblSenha);
-		contentPane.add(passUser);
-		contentPane.add(txtLogin);
+		contentPane.add(lblCnpj);
 		
 		JButton btnAlterar = new JButton("Alterar");
 		
-		btnAlterar.setBounds(249, 221, 100, 23);
+		btnAlterar.setBounds(241, 247, 100, 23);
 		contentPane.add(btnAlterar);
 		
 		JButton btnPesquisar = new JButton("Pesquisar");
 		btnPesquisar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-				//PEGANDO OS DADOS DO BD
 				
 				
 				//FAZENDO A CONEXÃO AO BD
@@ -163,18 +156,15 @@ public class Cadastro_Usuario extends JFrame {
 				
 				//REALIZANDO UMA BUSCA NO BD
 				
-				String sql = "select * from usuario where login_usu = '"+txtPesquisarCad.getText()+"'";
+				String sql = "select * from servicos where cod_serv = '"+txtPesquisarCad.getText()+"'";
 				ResultSet res = con.executaBusca(sql);
 				
 				try {
 					
 					while(res.next()) {
 						
-							// = res.getInt("id");
-
-							 cboTipoUsu.setSelectedItem(res.getString("nivel_acesso"));
-							 txtLogin.setText(res.getString("login_usu"));
-							 passUser.setText(res.getString("senha_usu"));
+							
+							 
 					}
 					res.close();
 					
@@ -185,16 +175,16 @@ public class Cadastro_Usuario extends JFrame {
 				
 			}
 		});
-		btnPesquisar.setBounds(357, 35, 94, 23);
+		btnPesquisar.setBounds(357, 74, 94, 23);
 		contentPane.add(btnPesquisar);
 		
 		txtPesquisarCad = new JTextField();
-		txtPesquisarCad.setBounds(102, 36, 247, 20);
+		txtPesquisarCad.setBounds(102, 75, 247, 20);
 		contentPane.add(txtPesquisarCad);
 		txtPesquisarCad.setColumns(10);
 		
-		JLabel lbl = new JLabel("Pesquisar dados de usu\u00E1rio para alter\u00E1-los!");
-		lbl.setBounds(102, 58, 250, 14);
+		JLabel lbl = new JLabel("Pesquisar dados de servi\u00E7o para alter\u00E1-los!");
+		lbl.setBounds(102, 97, 250, 14);
 		contentPane.add(lbl);
 		
 		JButton btnExcluir = new JButton("Excluir");
@@ -207,26 +197,20 @@ public class Cadastro_Usuario extends JFrame {
 				try {
 					
 					if(txtPesquisarCad.getText().equals("")) {
-						JOptionPane.showMessageDialog(null, "Informe o login no campo Pesquisar!!!");
+						JOptionPane.showMessageDialog(null, "Informe o código do serviço no campo Pesquisar!!!");
 					}else {
 					//EFETUANDO A CONEXÃO
 					conexao con = new conexao();
 					
 					//VARIÁVEL QUE PEGARÁ OS DADOS PARA SEREM EXCLUÍDOS DO BD
 					String sql;
-					sql = "delete from usuarios where id_usu ='"+txtID.getText()+"';";
+					sql = "delete from produtonecessario where id_prodnec ='"+txtID.getText()+"';";
 					con.executaSQL(sql);
 					
-					//LIMPANDO OS CAMPOS
 					
-					
-					txtLogin.setText(null);
-					passUser.setText(null);
-					txtPesquisarCad.setText(null);
-					//FIM LIMPAR CAMPOS
 					//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
 					
-					txtLogin.requestFocus();
+					txtPesquisarCad.requestFocus();
 					
 					JOptionPane.showMessageDialog(null, "Exclusão Realizada com sucesso!!!");
 					
@@ -237,20 +221,25 @@ public class Cadastro_Usuario extends JFrame {
 				
 			}
 		});
-		btnExcluir.setBounds(147, 221, 100, 23);
+		btnExcluir.setBounds(139, 247, 100, 23);
 		contentPane.add(btnExcluir);
 		
 		
-		cboTipoUsu.setBounds(103, 87, 130, 20);
-		contentPane.add(cboTipoUsu);
+		cboServico.setBounds(103, 126, 246, 20);
+		contentPane.add(cboServico);
 		
-		JLabel lblId = new JLabel("ID:");
-		lblId.setBounds(10, 22, 46, 14);
+		
+		cboProduto.setBounds(103, 152, 246, 20);
+		contentPane.add(cboProduto);
+		
+		JLabel lblId = new JLabel("Id:");
+		lblId.setBounds(10, 25, 23, 14);
 		contentPane.add(lblId);
 		
 		txtID = new JTextField();
 		txtID.setEditable(false);
-		txtID.setBounds(33, 19, 62, 20);
+		txtID.setHorizontalAlignment(SwingConstants.CENTER);
+		txtID.setBounds(37, 22, 66, 20);
 		contentPane.add(txtID);
 		txtID.setColumns(10);
 		
@@ -264,25 +253,23 @@ public class Cadastro_Usuario extends JFrame {
 				try {
 					
 					if(txtPesquisarCad.getText().equals("")) {
-						JOptionPane.showMessageDialog(null, "Informe o cnpj/cpf no campo Pesquisar!!!");
+						JOptionPane.showMessageDialog(null, "Informe o código do serviço no campo Pesquisar!!!");
 					}else {
 					//EFETUANDO A CONEXÃO
 					conexao con = new conexao();
 					
 					//VARIÁVEL QUE PEGARÁ OS DADOS PARA SEREM ATUALIZADOS NO BD
 					String sql;
-					sql = "update usuario set nivel_acesso='"+cboTipoUsu.getSelectedIndex()+"', login_usu='"+txtLogin.getText()+"', senha_usu='"+passUser.getPassword()+"' where id_usu ='"+txtID.getText()+"';";
+					sql = "update produtonecessario set cod_prod='"+cboProduto.getSelectedItem()+"', cod_serv='"+cboServico.getSelectedIndex()+"' where id_prodnec ='"+txtID.getText()+"';";
 					con.executaSQL(sql);
 					
-					//LIMPANDO OS CAMPOS
 					
 					
-					txtLogin.setText(null);
-					passUser.setText(null);
+					
 					//FIM LIMPAR CAMPOS
 					//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
 					
-					txtLogin.requestFocus();
+					txtPesquisarCad.requestFocus();
 					
 					JOptionPane.showMessageDialog(null, "Alteração Realizada com sucesso!!!");
 					

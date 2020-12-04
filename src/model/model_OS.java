@@ -11,6 +11,7 @@ public class model_OS {
 	private String status_serv;
 	private String tipoos_orc;
 	private float valorOS;
+	private String status;
 	
 	
 	public int getCodo_serv() {
@@ -67,6 +68,13 @@ public class model_OS {
 	public void setValorOS(float valorOS) {
 		this.valorOS = valorOS;
 	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
 	
 	
 

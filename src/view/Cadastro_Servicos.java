@@ -28,17 +28,14 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import java.awt.Color;
 
-public class Cadastro_Empresa extends JFrame {
+public class Cadastro_Servicos extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField txtRazaoSocial;
-	private JTextField txtCnpj;
-	private JTextField txtEndereco;
-	private JTextField txtCep;
-	private JTextField txtEmail;
-	private JTextField txtTelefone;
+	private JTextField txtDescServ;
+	private JTextField txtPrecoServ;
+	private JTextField txtAreaPadrao;
 	private JTextField txtPesquisarCad;
-	private JTextField txtIdEmp;
+	private JTextField txtIdServ;
 
 	/**
 	 * Launch the application.
@@ -47,7 +44,7 @@ public class Cadastro_Empresa extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Cadastro_Empresa frame = new Cadastro_Empresa();
+					Cadastro_Servicos frame = new Cadastro_Servicos();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -71,7 +68,7 @@ public class Cadastro_Empresa extends JFrame {
 				
 				totalCad = Integer.parseInt(res.getString("total"));
 				
-				txtIdEmp.setText(Integer.toString(totalCad + 1));
+				txtIdServ.setText(Integer.toString(totalCad + 1));
 			}
 			
 		} catch (Exception e) {
@@ -82,7 +79,7 @@ public class Cadastro_Empresa extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Cadastro_Empresa() {
+	public Cadastro_Servicos() {
 		addWindowFocusListener(new WindowFocusListener() {
 			public void windowGainedFocus(WindowEvent arg0) {
 				CarregarID();
@@ -93,54 +90,33 @@ public class Cadastro_Empresa extends JFrame {
 		setResizable(false);
 		setTitle("Cadastro");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 490, 414);
+		setBounds(100, 100, 490, 333);
 		contentPane = new JPanel();
-		contentPane.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Cadastro de Empresa", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		contentPane.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Cadastro de Servi\u00E7o", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		setContentPane(contentPane);
 		
 		this.setLocationRelativeTo(this);
 		
-		JLabel lblRazoSocial = new JLabel("Raz\u00E3o Social:");
+		JLabel lblRazoSocial = new JLabel("Descri\u00E7\u00E3o:");
 		lblRazoSocial.setBounds(10, 129, 83, 14);
 		
-		JLabel lblCnpj = new JLabel("CNPJ:");
+		JLabel lblCnpj = new JLabel("Pre\u00E7o:");
 		lblCnpj.setBounds(10, 155, 49, 14);
 		
-		JLabel lblEndereo = new JLabel("Endere\u00E7o:");
+		JLabel lblEndereo = new JLabel("\u00C1rea Padr\u00E3o:");
 		lblEndereo.setBounds(10, 181, 83, 14);
 		
-		JLabel lblEmail = new JLabel("E-mail:");
-		lblEmail.setBounds(10, 233, 59, 14);
+		txtDescServ = new JTextField();
+		txtDescServ.setBounds(103, 129, 344, 20);
+		txtDescServ.setColumns(10);
 		
-		JLabel lblTelefone = new JLabel("Telefone:");
-		lblTelefone.setBounds(10, 259, 83, 14);
+		txtPrecoServ = new JTextField();
+		txtPrecoServ.setBounds(103, 155, 130, 20);
+		txtPrecoServ.setColumns(10);
 		
-		JLabel lblCep = new JLabel("Cep:");
-		lblCep.setBounds(10, 207, 49, 14);
-		
-		txtRazaoSocial = new JTextField();
-		txtRazaoSocial.setBounds(103, 129, 344, 20);
-		txtRazaoSocial.setColumns(10);
-		
-		txtCnpj = new JTextField();
-		txtCnpj.setBounds(103, 155, 130, 20);
-		txtCnpj.setColumns(10);
-		
-		txtEndereco = new JTextField();
-		txtEndereco.setBounds(103, 181, 319, 20);
-		txtEndereco.setColumns(10);
-		
-		txtCep = new JTextField();
-		txtCep.setBounds(103, 207, 131, 20);
-		txtCep.setColumns(10);
-		
-		txtEmail = new JTextField();
-		txtEmail.setBounds(103, 233, 344, 20);
-		txtEmail.setColumns(10);
-		
-		txtTelefone = new JTextField();
-		txtTelefone.setBounds(103, 259, 86, 20);
-		txtTelefone.setColumns(10);
+		txtAreaPadrao = new JTextField();
+		txtAreaPadrao.setBounds(103, 181, 130, 20);
+		txtAreaPadrao.setColumns(10);
 		
 		JButton btnCadastrarUser = new JButton("Cadastrar");
 		btnCadastrarUser.addActionListener(new ActionListener() {
@@ -152,25 +128,21 @@ public class Cadastro_Empresa extends JFrame {
 				try {
 					//VARIÁVEL QUE PEGARÁ OS DADOS PARA SEREM INSERIDOS NO BD
 					String sql;
-					sql = "insert into empresa(id_empresa, nome_emp,cnpj_emp,end_emp,cep_emp,email_emp,telefon_emp)"
-							+ "values('"+txtIdEmp.getText()+"', '"+txtRazaoSocial.getText()+"','"+txtCnpj.getText()+"','"+txtEndereco.getText()+"','"+txtCep.getText()+"',"+
-							"'"+txtEmail.getText()+"','"+txtTelefone.getText()+"');";
+					sql = "insert into servicos(cod_serv, descri_serv,preco_serv,areapadrao)"
+							+ "values('"+txtIdServ.getText()+"', '"+txtDescServ.getText()+"','"+txtPrecoServ.getText()+"','"+txtAreaPadrao.getText()+"');";
 					con.executaSQL(sql);
 					
 					//LIMPANDO OS CAMPOS
 					
-					txtRazaoSocial.setText(null);
-					txtCnpj.setText(null);
-					txtEndereco.setText(null);
-					txtCep.setText(null);
-					txtEmail.setText(null);
-					txtTelefone.setText(null);
+					txtDescServ.setText(null);
+					txtPrecoServ.setText(null);
+					txtAreaPadrao.setText(null);
 					
 					
 					//FIM LIMPAR CAMPOS
 					//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
 					
-					txtRazaoSocial.requestFocus();
+					txtDescServ.requestFocus();
 					
 					JOptionPane.showMessageDialog(null, "Cadastro Realizado com sucesso!!!");
 					
@@ -182,7 +154,7 @@ public class Cadastro_Empresa extends JFrame {
 				
 			}
 		});
-		btnCadastrarUser.setBounds(37, 334, 100, 23);
+		btnCadastrarUser.setBounds(37, 247, 100, 23);
 		
 		JButton btnLimpar = new JButton("Limpar");
 		btnLimpar.addActionListener(new ActionListener() {
@@ -191,42 +163,33 @@ public class Cadastro_Empresa extends JFrame {
 				//LIMPANDO OS CAMPOS
 				
 				txtPesquisarCad.setText(null);
-				txtRazaoSocial.setText(null);
-				txtCnpj.setText(null);
-				txtEndereco.setText(null);
-				txtCep.setText(null);
-				txtEmail.setText(null);
-				txtTelefone.setText(null);
-				txtIdEmp.setText(null);
+				txtDescServ.setText(null);
+				txtPrecoServ.setText(null);
+				txtAreaPadrao.setText(null);
+				txtIdServ.setText(null);
 				
 				//FIM LIMPAR CAMPOS
 				//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
 				
-				txtRazaoSocial.requestFocus();
+				txtDescServ.requestFocus();
 				CarregarID();
 				
 			}
 		});
-		btnLimpar.setBounds(343, 334, 100, 23);
+		btnLimpar.setBounds(343, 247, 100, 23);
 		contentPane.setLayout(null);
 		contentPane.add(btnCadastrarUser);
 		contentPane.add(btnLimpar);
 		contentPane.add(lblRazoSocial);
 		contentPane.add(lblCnpj);
-		contentPane.add(lblEmail);
-		contentPane.add(lblCep);
 		contentPane.add(lblEndereo);
-		contentPane.add(lblTelefone);
-		contentPane.add(txtTelefone);
-		contentPane.add(txtEmail);
-		contentPane.add(txtCnpj);
-		contentPane.add(txtRazaoSocial);
-		contentPane.add(txtCep);
-		contentPane.add(txtEndereco);
+		contentPane.add(txtPrecoServ);
+		contentPane.add(txtDescServ);
+		contentPane.add(txtAreaPadrao);
 		
 		JButton btnAlterar = new JButton("Alterar");
 		
-		btnAlterar.setBounds(241, 334, 100, 23);
+		btnAlterar.setBounds(241, 247, 100, 23);
 		contentPane.add(btnAlterar);
 		
 		JButton btnPesquisar = new JButton("Pesquisar");
@@ -241,20 +204,17 @@ public class Cadastro_Empresa extends JFrame {
 				
 				//REALIZANDO UMA BUSCA NO BD
 				
-				String sql = "select * from empresa where cnpj_emp = '"+txtPesquisarCad.getText()+"'";
+				String sql = "select * from servicos where cod_serv = '"+txtPesquisarCad.getText()+"'";
 				ResultSet res = con.executaBusca(sql);
 				
 				try {
 					
 					while(res.next()) {
 						
-							txtIdEmp.setText(res.getString("id_empresa"));
-							txtRazaoSocial.setText(res.getString("nome_emp"));
-							 txtCnpj.setText(res.getString("cnpj_emp"));
-							 txtEndereco.setText(res.getString("end_emp"));
-							 txtCep.setText(res.getString("cep_emp"));
-							 txtEmail.setText(res.getString("email_emp"));
-							 txtTelefone.setText(res.getString("telefon_emp"));
+							txtIdServ.setText(res.getString("cod_serv"));
+							txtDescServ.setText(res.getString("descri_serv"));
+							 txtPrecoServ.setText(res.getString("preco_serv"));
+							 txtAreaPadrao.setText(res.getString("areapadrao"));
 							 
 					}
 					res.close();
@@ -274,7 +234,7 @@ public class Cadastro_Empresa extends JFrame {
 		contentPane.add(txtPesquisarCad);
 		txtPesquisarCad.setColumns(10);
 		
-		JLabel lbl = new JLabel("Pesquisar dados de usu\u00E1rio para alter\u00E1-los!");
+		JLabel lbl = new JLabel("Pesquisar dados de servi\u00E7o para alter\u00E1-los!");
 		lbl.setBounds(102, 97, 250, 14);
 		contentPane.add(lbl);
 		
@@ -288,29 +248,26 @@ public class Cadastro_Empresa extends JFrame {
 				try {
 					
 					if(txtPesquisarCad.getText().equals("")) {
-						JOptionPane.showMessageDialog(null, "Informe o cnpj/cpf no campo Pesquisar!!!");
+						JOptionPane.showMessageDialog(null, "Informe o código do serviço no campo Pesquisar!!!");
 					}else {
 					//EFETUANDO A CONEXÃO
 					conexao con = new conexao();
 					
 					//VARIÁVEL QUE PEGARÁ OS DADOS PARA SEREM EXCLUÍDOS DO BD
 					String sql;
-					sql = "delete from usuarios where cnpj_emp ='"+txtPesquisarCad.getText()+"';";
+					sql = "delete from servicos where cod_serv ='"+txtPesquisarCad.getText()+"';";
 					con.executaSQL(sql);
 					
 					//LIMPANDO OS CAMPOS
 					
-					txtRazaoSocial.setText(null);
-					txtCnpj.setText(null);
-					txtEndereco.setText(null);
-					txtCep.setText(null);
-					txtEmail.setText(null);
-					txtTelefone.setText(null);
+					txtDescServ.setText(null);
+					txtPrecoServ.setText(null);
+					txtAreaPadrao.setText(null);
 					txtPesquisarCad.setText(null);
 					//FIM LIMPAR CAMPOS
 					//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
 					
-					txtRazaoSocial.requestFocus();
+					txtDescServ.requestFocus();
 					
 					JOptionPane.showMessageDialog(null, "Exclusão Realizada com sucesso!!!");
 					
@@ -321,19 +278,19 @@ public class Cadastro_Empresa extends JFrame {
 				
 			}
 		});
-		btnExcluir.setBounds(139, 334, 100, 23);
+		btnExcluir.setBounds(139, 247, 100, 23);
 		contentPane.add(btnExcluir);
 		
 		JLabel lblId = new JLabel("Id:");
 		lblId.setBounds(10, 26, 46, 14);
 		contentPane.add(lblId);
 		
-		txtIdEmp = new JTextField();
-		txtIdEmp.setEditable(false);
-		txtIdEmp.setHorizontalAlignment(SwingConstants.CENTER);
-		txtIdEmp.setBounds(37, 23, 66, 20);
-		contentPane.add(txtIdEmp);
-		txtIdEmp.setColumns(10);
+		txtIdServ = new JTextField();
+		txtIdServ.setEditable(false);
+		txtIdServ.setHorizontalAlignment(SwingConstants.CENTER);
+		txtIdServ.setBounds(37, 23, 66, 20);
+		contentPane.add(txtIdServ);
+		txtIdServ.setColumns(10);
 		
 		btnAlterar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -345,30 +302,27 @@ public class Cadastro_Empresa extends JFrame {
 				try {
 					
 					if(txtPesquisarCad.getText().equals("")) {
-						JOptionPane.showMessageDialog(null, "Informe o cnpj no campo Pesquisar!!!");
+						JOptionPane.showMessageDialog(null, "Informe o código do serviço no campo Pesquisar!!!");
 					}else {
 					//EFETUANDO A CONEXÃO
 					conexao con = new conexao();
 					
 					//VARIÁVEL QUE PEGARÁ OS DADOS PARA SEREM ATUALIZADOS NO BD
 					String sql;
-					sql = "update empresa set nome_emp='"+txtRazaoSocial.getText()+"', cnpj_emp='"+txtCnpj.getText()+"', end_emp='"+txtEndereco.getText()+"', cep_emp='"+txtCep.getText()+"', email_emp='"+txtEmail.getText()+"', telefon_emp='"+txtTelefone.getText()+"' where id_empresa ='"+txtIdEmp.getText()+"';";
+					sql = "update servicos set descri_serv='"+txtDescServ.getText()+"', preco_serv='"+txtPrecoServ.getText()+"', areapadrao='"+txtAreaPadrao.getText()+"' where cod_serv ='"+txtIdServ.getText()+"';";
 					con.executaSQL(sql);
 					
 					//LIMPANDO OS CAMPOS
 					
-					txtRazaoSocial.setText(null);
-					txtCnpj.setText(null);
-					txtEndereco.setText(null);
-					txtCep.setText(null);
-					txtEmail.setText(null);
-					txtTelefone.setText(null);
+					txtDescServ.setText(null);
+					txtPrecoServ.setText(null);
+					txtAreaPadrao.setText(null);
 					
 					
 					//FIM LIMPAR CAMPOS
 					//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
 					
-					txtRazaoSocial.requestFocus();
+					txtDescServ.requestFocus();
 					
 					JOptionPane.showMessageDialog(null, "Alteração Realizada com sucesso!!!");
 					

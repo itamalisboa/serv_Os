@@ -171,32 +171,29 @@ public class Cadastro_Funcionario extends JFrame {
 		btnPesquisar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
+				//FAZENDO A CONEXÃO AO BD
+				
 				conexao con = new conexao();
-				//CADASTRANDO OS DADOS NO BD
+				
+				
+				//REALIZANDO UMA BUSCA NO BD
+				
+				String sql = "select * from funcionarios where cpf_func = '"+txtPesquisarCad.getText()+"'";
+				ResultSet res = con.executaBusca(sql);
 				
 				try {
-					//VARIÁVEL QUE PEGARÁ OS DADOS PARA SEREM INSERIDOS NO BD
-					String sql;
-					sql = "insert into funcionarios(id_func, nome_func, cpf_func, rg_func, email_func,)"
-							+ "values('"+txtID.getText()+"', '"+txtNome.getText()+"','"+txtCPF.getText()+"','"+txtRG.getText()+"',"+
-							"'"+txtEmail.getText()+"');";
-					con.executaSQL(sql);
 					
-					//LIMPANDO OS CAMPOS
+					while(res.next()) {
+						
+							txtID.setText(res.getString("id_func"));
+							txtNome.setText(res.getString("nome_func"));
+							 txtCPF.setText(res.getString("cpf_func"));
+							 txtRG.setText(res.getString("rg_func"));
+							 txtEmail.setText(res.getString("email_func"));
+							 
+					}
+					res.close();
 					
-					txtNome.setText(null);
-					txtCPF.setText(null);
-					txtRG.setText(null);
-					txtEmail.setText(null);
-					txtTelefone.setText(null);
-					
-					
-					//FIM LIMPAR CAMPOS
-					//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
-					
-					txtNome.requestFocus();
-					
-					JOptionPane.showMessageDialog(null, "Cadastro Realizado com sucesso!!!");
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -255,7 +252,6 @@ public class Cadastro_Funcionario extends JFrame {
 				
 				//FIM LIMPAR CAMPOS
 					
-					JOptionPane.showMessageDialog(null, "Cadastro Realizado Com Sucesso!!!");
 				}
 			}
 		});
@@ -283,26 +279,29 @@ public class Cadastro_Funcionario extends JFrame {
 		btnAlterar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				//PEGANDO OS DADOS E SETANDO NOS ATRIBUTOS DA CLASSE DADOSCFU 
-				
-				DadosCFU cliente = new DadosCFU();
-				cliente.setIdC(txtID.getText());
-				cliente.setNome(txtNome.getText());
-				cliente.setCpf(txtCPF.getText());
-				cliente.setEndereco(txtRG.getText());
-
-				cliente.setEmail(txtEmail.getText());
-				cliente.setTelefone(txtTelefone.getText());
-
+				if(txtNome.getText().isEmpty()) {
+					JOptionPane.showMessageDialog(null, "Informe o Nome do Cliente!!!");
+				}else if(txtCPF.getText().isEmpty()){
+						JOptionPane.showMessageDialog(null, "Informe o CPF do Cliente!!!");
+					}else if(txtRG.getText().isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Informe o Endereço do Cliente!!!");
+				}else {
 				
 				//ALTERANDO OS DADOS DO USUÁRIO
 				
 				try {
+					
 					if(txtPesquisarCad.getText().equals("")) {
 						JOptionPane.showMessageDialog(null, "Informe o CPF no campo Pesquisar!!!");
 					}else {
-						CrudBDCliente dao = new CrudBDCliente();
-						dao.Atualizar(cliente);
+						
+						conexao con = new conexao();
+						//CADASTRANDO OS DADOS NO BD
+						
+						//VARIÁVEL QUE PEGARÁ OS DADOS PARA SEREM ATUALIZADOS NO BD
+						String sql;
+						sql = "update funcionarios set nome_func='"+txtNome.getText()+"', cpf_func='"+txtCPF.getText()+"', rg_func='"+txtRG.getText()+"', email_func='"+txtEmail.getText()+"' where id_func ='"+txtID.getText()+"';";
+						con.executaSQL(sql);
 						
 					//LIMPANDO OS CAMPOS
 					
@@ -311,7 +310,6 @@ public class Cadastro_Funcionario extends JFrame {
 					txtCPF.setText(null);
 					txtRG.setText(null);
 					txtEmail.setText(null);
-
 					txtTelefone.setText(null);
 					txtPesquisarCad.setText(null);
 					//FIM LIMPAR CAMPOS
@@ -327,39 +325,50 @@ public class Cadastro_Funcionario extends JFrame {
 				}
 				
 			}
+				
+			}
 		});
 		
 		JButton btnExcluir = new JButton("Excluir");
 		btnExcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				//EXCLUINDO OS DADOS DO USUÁRIO
-
+//EXCLUÍNDO OS DADOS DO USUÁRIO
+				
+				
+				try {
+					
 					if(txtPesquisarCad.getText().equals("")) {
-						JOptionPane.showMessageDialog(null, "Informe o CPF no campo Pesquisar!!!");
+						JOptionPane.showMessageDialog(null, "Informe o cpf no campo Pesquisar!!!");
 					}else {
-						//INSTANCIANDO UM OBJETO PARA PEGAR O CPF DO CLINTE PARA PODER FAZER A BUSCA NO BD	
-						
-						DadosCFU cliente = new DadosCFU();
-						cliente.setCpf(txtPesquisarCad.getText());
-						CrudBDCliente dao = new CrudBDCliente();
-						dao.DeletarCliente(cliente);
-						JOptionPane.showMessageDialog(null, "Exclusão Realizada com sucesso!!!");
-						
-						//LIMPANDO OS CAMPOS
-						txtID.setText(null);
-						txtPesquisarCad.setText(null);
-						txtNome.setText(null);
-						txtCPF.setText(null);
-						txtRG.setText(null);
-						txtEmail.setText(null);
-						txtTelefone.setText(null);
-
-						//FIM LIMPAR CAMPOS
-						//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
-						
-						txtNome.requestFocus();
-					}			
+					//EFETUANDO A CONEXÃO
+					conexao con = new conexao();
+					
+					//VARIÁVEL QUE PEGARÁ OS DADOS PARA SEREM EXCLUÍDOS DO BD
+					String sql;
+					sql = "delete from funcionarios where cpf_func ='"+txtPesquisarCad.getText()+"';";
+					con.executaSQL(sql);
+					
+					//LIMPANDO OS CAMPOS
+					
+					txtID.setText(null);
+					txtNome.setText(null);
+					txtCPF.setText(null);
+					txtRG.setText(null);
+					txtEmail.setText(null);
+					txtTelefone.setText(null);
+					txtPesquisarCad.setText(null);
+					//FIM LIMPAR CAMPOS
+					//RETORNANDO O FOCU NO CAMPO RAZÃO SOCIAL
+					
+					txtNome.requestFocus();
+					
+					JOptionPane.showMessageDialog(null, "Exclusão Realizada com sucesso!!!");
+					
+					}
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}			
 
 			}
 		});
